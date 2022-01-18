@@ -26,3 +26,6 @@
 ### QQ:2351078777
 ### Email:2351078777@qq.com
 ### Telegram:[@HuoHuaCore](t.me/HuoHuaCore)
+
+# 效果预览
+![Preview](https://i.ibb.co/YcxbPNQ/024-S-Y26-XG-QAHY1-TRV.png)
