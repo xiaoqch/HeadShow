@@ -20,6 +20,7 @@
     |```%hunger%```|Current hunger of a player|
     |```%device%```|Device of a player|
     |```%avgPing```|Ping of a player|
+    |```%Name%```|Name of a player|
     
 ## Contact
 ### QQ:2351078777
