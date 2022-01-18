@@ -148,3 +148,11 @@ THook(void, "?tick@Level@@UEAAXXZ", void* self) {
 	}
 }
 
+//玩家生命变动
+THook(long long, "?change@HealthAttributeDelegate@@UEAA_NMMUAttributeBuffInfo@@@Z", __int64 a1, float a2, float a3, __int64 a4) {
+	Actor* ac = *(Actor**)(a1 + 32);
+	if (ac->getTypeName() == "minecraft:player") {
+		updateHead();
+	}
+	return original(a1, a2, a3, a4);
+}
