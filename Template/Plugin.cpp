@@ -89,14 +89,6 @@ void PluginInit()
 	bool re = readJson();
 	if (re) logger.info("Readfile success.");
 	logger.info("HeadShow Loaded. By HuoHua");
-
-	//玩家进服事件
-	Event::PlayerJoinEvent::subscribe([](const Event::PlayerJoinEvent& ev) {
-		Player* pl = ev.mPlayer;
-		//设置PlayerMap的对应Map
-		ORIG_NAME[(ServerPlayer*)pl] = pl->getName().c_str();
-		return true;
-	});
 	
 	//注册指令
 	Event::RegCmdEvent::subscribe([](Event::RegCmdEvent ev) { //注册指令事件
@@ -109,6 +101,7 @@ bool updateHead() {
 	for (auto pl : Level::getAllPlayers())
 	{
 		string name = pl->getRealName();
+		ORIG_NAME[(ServerPlayer*)pl] = name.c_str();
 		string health = std::to_string(pl->getHealth());
 		
 		//获取玩家饥饿值
