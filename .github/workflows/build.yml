@@ -90,6 +90,5 @@ jobs:
         body_path: ${{ github.workspace }}\CHANGELOG.txt
         files: |
           D:/out/plugins.zip
-          D:/out/SDK.zip
       env:
           GITHUB_REPOSITORY: HuoHuas001/HeadShow
