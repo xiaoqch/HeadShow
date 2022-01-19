@@ -18,7 +18,8 @@
 #include <LoggerAPI.h>
 #include <LLAPI.h>
 #include <EventAPI.h>
-
+#include "../SDK/Header/MC/Scoreboard.hpp"
+#include "../SDK/Header/LLMoney.h"
 
 using nlohmann::json;
 Logger logger("HeadShow");
@@ -103,6 +104,7 @@ bool updateHead() {
 		string name = pl->getRealName();
 		ORIG_NAME[(ServerPlayer*)pl] = name.c_str();
 		string health = std::to_string(pl->getHealth());
+		string money = std::to_string(LLMoneyGet(pl->getXuid()));
 		
 		//获取玩家饥饿值
 		auto plnbt = pl->getNbt();
@@ -123,8 +125,8 @@ bool updateHead() {
 				hunger = hunger.substr(0, hunger.find("."));
 			}
 		}
-		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(defaultString,"%Name%",name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
-		//设置NameTag 
+		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(defaultString,"%money%",money), "%Name%", name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
+		//设置NameTag
 		pl->setNameTag(sinfo);
 	}
 	return true;
