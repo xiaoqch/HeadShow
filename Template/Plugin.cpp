@@ -124,7 +124,7 @@ bool updateHead() {
 			}
 		}
 		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(defaultString,"%Name%",name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
-		//设置NameTag
+		//设置NameTag 
 		pl->setNameTag(sinfo);
 	}
 	return true;
