@@ -32,7 +32,7 @@ playerMap<string> ORIG_NAME;
 int tick = 0;
 const std::string ver = "v0.0.4";
 
-//修改返回的Name
+//修改返回的Name 
 THook(string&, "?getNameTag@Actor@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", void* x) {
 	if (auto it = ORIG_NAME._map.find((ServerPlayer*)x); it != ORIG_NAME._map.end()) {
 		return it->second;
