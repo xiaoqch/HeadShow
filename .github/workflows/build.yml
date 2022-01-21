@@ -61,7 +61,7 @@ jobs:
       run: |
         cp x64/Release/*.dll D:/out/plugins
         cp x64/Release/*.pdb D:/out/plugins
-        cp HeadShow/*.json D:/out/HeadShow/plugins
+        cp HeadShow/*.json D:/out/plugins/HeadShow
       shell: bash
 
     - name: Upload plugins
