@@ -4,7 +4,7 @@
 #pragma comment(lib, "../SDK/Lib/bedrock_server_var.lib")
 #pragma comment(lib, "../SDK/Lib/SymDBHelper.lib")
 #pragma comment(lib, "../SDK/Lib/LiteLoader.lib")
-#pragma comment(lib,"../SDK/Lib/LLMoney.lib")
+//#pragma comment(lib,"../SDK/Lib/LLMoney.lib")
 #pragma comment(lib,"../SDK/Lib/libcrypto.lib")
 #pragma comment(lib,"../SDK/Lib/libssl.lib")
 

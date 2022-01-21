@@ -12,8 +12,8 @@ for /f "tokens=3* delims= " %%i in ('Reg query "HKCU\Software\Microsoft\Windows\
     if %%i==0x1 (
         echo [INFO] System Proxy enabled. Adapting Settings...
         for /f "tokens=3* delims= " %%a in ('Reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings" /v ProxyServer') do set PROXY_ADDR=%%a
-        set http_proxy=http://!PROXY_ADDR!
-        set https_proxy=http://!PROXY_ADDR!
+        set http_proxy=http://127.0.0.1:10809
+        set https_proxy=http://127.0.0.1:10809
         echo [INFO] System Proxy enabled. Adapting Settings finished.
         echo.
     )

@@ -20,10 +20,28 @@
 #include <EventAPI.h>
 #include <MC/Scoreboard.hpp>
 #include <MC/Objective.hpp>
-#include "../SDK/Header/LLMoney.h"
+#include "money.h"
+//#include "../SDK/Header/LLMoney.h"
 #define CPPHTTPLIB_OPENSSL_SUPPORT
 #include <httplib/httplib.h>
+typedef money_t(*LLMoneyGet_T)(xuid_t);
+typedef string(*LLMoneyGetHist_T)(xuid_t, int);
+typedef bool (*LLMoneyTrans_T)(xuid_t, xuid_t, money_t, string const&);
+typedef bool (*LLMoneySet_T)(xuid_t, money_t);
+typedef bool (*LLMoneyAdd_T)(xuid_t, money_t);
+typedef bool (*LLMoneyReduce_T)(xuid_t, money_t);
+typedef void (*LLMoneyClearHist_T)(int);
 
+struct dynamicSymbolsMap_type
+{
+	LLMoneyGet_T LLMoneyGet = nullptr;
+	LLMoneySet_T LLMoneySet = nullptr;
+	LLMoneyAdd_T LLMoneyAdd = nullptr;
+	LLMoneyReduce_T LLMoneyReduce = nullptr;
+	LLMoneyTrans_T LLMoneyTrans = nullptr;
+	LLMoneyGetHist_T LLMoneyGetHist = nullptr;
+	LLMoneyClearHist_T LLMoneyClearHist = nullptr;
+} dynamicSymbolsMap;
 
 using nlohmann::json;
 Logger logger("HeadShow");
@@ -60,6 +78,21 @@ bool readJson() {
 		return false;
 	}
 	
+}
+
+bool EconomySystem::init() {
+	auto llmoney = LL::getPlugin("LLMoney");
+	if (!llmoney)
+	{
+		logger.warn("The %money% variable will not take effect if LLMoney is not preceded");
+		return false;
+	}
+
+	HMODULE h = llmoney->handler;
+	dynamicSymbolsMap.LLMoneyGet = (LLMoneyGet_T)GetProcAddress(h, "LLMoneyGet");
+	if (!dynamicSymbolsMap.LLMoneyGet)
+		logger.warn("Fail to load API money.getMoney!");
+	return true;
 }
 
 void version() {
@@ -125,11 +158,24 @@ public:
 	}
 };
 
+money_t EconomySystem::getMoney(xuid_t player)
+{
+	if (dynamicSymbolsMap.LLMoneyGet)
+		return dynamicSymbolsMap.LLMoneyGet(player);
+	else
+	{
+		logger.error("API money.getMoney have not been loaded!");
+		return 0;
+	}
+}
+
 
 void PluginInit()
 {
 	LL::registerPlugin("HeadShow", "Show info on player's belowname", LL::Version(0,0,1));
 	logger.info("HeadShow Loading...");
+	//初始化llmoney的api
+	EconomySystem::init();
 	//读取json文件
 	bool re = readJson();
 	if (re) logger.info("Readfile success.");
@@ -161,8 +207,7 @@ bool updateHead() {
 		string name = pl->getRealName();
 		ORIG_NAME[(ServerPlayer*)pl] = name.c_str();
 		string health = std::to_string(pl->getHealth());
-		string money = std::to_string(LLMoneyGet(pl->getXuid()));
-		
+
 		//获取玩家饥饿值
 		auto plnbt = pl->getNbt();
 		json plnJ = json::parse(plnbt.get()->toJson(0));
@@ -187,7 +232,11 @@ bool updateHead() {
 			string score = std::to_string(pl->getScore(defaultScoreBoard));
 			dfs = m_replace(dfs, "%score%", score);
 		}
-		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(dfs,"%money%",money), "%Name%", name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
+		if (dynamicSymbolsMap.LLMoneyGet) {
+			string money = std::to_string(EconomySystem::getMoney(pl->getXuid()));
+			dfs = m_replace(dfs, "%money%", money);
+		}
+		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(dfs, "%Name%", name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
 		//设置NameTag
 		pl->setNameTag(sinfo);
 	}
