@@ -1,2 +1,3 @@
-## HeadShow
-- fix selector
+## HeadShow V0.0.4
+- New Automatic Update
+- Add %score% variable

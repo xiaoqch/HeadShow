@@ -1,0 +1,5 @@
+{   
+    "updateTick":60,
+    "scoreBoard":"money",
+    "showTitle":"%Name%\n§c❤§b%maxHealth%§e/§a%health% §b%maxHunger%§e/§a%hunger%\n§f%device% §c%avgPing%ms"
+}

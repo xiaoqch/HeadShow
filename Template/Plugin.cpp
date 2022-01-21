@@ -18,14 +18,19 @@
 #include <LoggerAPI.h>
 #include <LLAPI.h>
 #include <EventAPI.h>
-#include "../SDK/Header/MC/Scoreboard.hpp"
+#include <MC/Scoreboard.hpp>
+#include <MC/Objective.hpp>
 #include "../SDK/Header/LLMoney.h"
+#define CPPHTTPLIB_OPENSSL_SUPPORT
+#include <httplib/httplib.h>
+
 
 using nlohmann::json;
 Logger logger("HeadShow");
-
+using namespace std;
 playerMap<string> ORIG_NAME;
 int tick = 0;
+const std::string ver = "v0.0.4";
 
 //修改返回的Name
 THook(string&, "?getNameTag@Actor@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", void* x) {
@@ -34,15 +39,54 @@ THook(string&, "?getNameTag@Actor@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@
 	}
 	return original(x);
 }
-string defaultString = "";
+
+//Config
+string defaultString = "%Name%\n§c❤§b%maxHealth%§e/§a%health% §b%maxHunger%§e/§a%hunger%\n§f%device% §c%avgPing%ms";
+string defaultScoreBoard = "";
 int defaultTick = 20;
+
 bool readJson() {
 	json j;			// 创建 json 对象
 	std::ifstream jfile("plugins/HeadShow/config.json");
-	jfile >> j;		// 以文件流形式读取 json 文件
-	defaultTick = j.at("updateTick");
-	defaultString = j.at("showTitle");
-	return true;
+	if (jfile) {
+		jfile >> j;		// 以文件流形式读取 json 文件
+		defaultTick = j.at("updateTick");
+		defaultString = j.at("showTitle");
+		defaultScoreBoard = j.at("scoreBoard");
+		return true;
+	}
+	else {
+		logger.error("No config.json file was detected. Please confirm whether the installation package is complete");
+		return false;
+	}
+	
+}
+
+void version() {
+	httplib::SSLClient cli("api.github.com", 443);
+	if (auto res = cli.Get("/repos/HuoHuas001/HeadShow/releases/latest")) {
+		if (res->status == 200){
+			string body = res->body;
+			json j = json::parse(body);
+
+			//获取版本
+			string getVersion = j.at("name");
+			if (getVersion != ver) {
+				//更新文件链接
+				string downloadUrl = j["assets"][0]["browser_download_url"];
+				logger.warn("New version update detected, download link:"+downloadUrl+".");
+			}
+			else {
+				logger.info("Your version is already the latest version.");
+			}
+		}
+		else {
+			logger.warn("Failed to detect updates.");
+		}
+	}
+	else {
+		cout << "error code: " << res.error() << std::endl;
+	}
 }
 
 string m_replace(string strSrc,
@@ -96,6 +140,19 @@ void PluginInit()
 		ReloadCommand::setup(ev.mCommandRegistry);
 		return true;
 	});
+
+	//检测开服
+	Event::ServerStartedEvent::subscribe([](Event::ServerStartedEvent ev) {
+		//检查更新
+		version();
+
+		//检查计分板
+		if (!::Global<Scoreboard>->getObjective(defaultScoreBoard)) {
+			auto obj = Scoreboard::newObjective(defaultScoreBoard, defaultScoreBoard);
+			logger.warn("Failed to find " + defaultScoreBoard + ", created automatically");
+		}
+		return true;
+	});
 }
 
 bool updateHead() {
@@ -125,7 +182,12 @@ bool updateHead() {
 				hunger = hunger.substr(0, hunger.find("."));
 			}
 		}
-		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(defaultString,"%money%",money), "%Name%", name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
+		string dfs = defaultString;
+		if (defaultScoreBoard != "") {
+			string score = std::to_string(pl->getScore(defaultScoreBoard));
+			dfs = m_replace(dfs, "%score%", score);
+		}
+		string sinfo = m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(m_replace(dfs,"%money%",money), "%Name%", name), "%avgPing%", avgPing), "%device%", device), "%hunger%", hunger), "%health%", health), "%maxHunger%", maxHunger), "%maxHealth%", maxHealth);
 		//设置NameTag
 		pl->setNameTag(sinfo);
 	}

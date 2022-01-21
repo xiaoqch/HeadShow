@@ -22,6 +22,7 @@
     |```%avgPing```|Ping of a player|
     |```%Name%```|Name of a player|
     |```%money%```|LLMoney of a player|
+    |```%score%```|Player scoreboard value (scoreboard is configured in config)|
     
 ## Contact
 ### QQ:2351078777

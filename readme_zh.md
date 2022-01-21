@@ -22,6 +22,7 @@
     |```%avgPing%```|玩家当前的平均Ping值|
     |```%Name%```|玩家名|
     |```%money%```|玩家的llmoney数值|
+    |```%score%```|玩家scoreboard的数值(scoreboard配置在config中)|
     
 ## 联系方式
 ### QQ:2351078777

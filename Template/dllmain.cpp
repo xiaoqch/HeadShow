@@ -5,7 +5,8 @@
 #pragma comment(lib, "../SDK/Lib/SymDBHelper.lib")
 #pragma comment(lib, "../SDK/Lib/LiteLoader.lib")
 #pragma comment(lib,"../SDK/Lib/LLMoney.lib")
-
+#pragma comment(lib,"../SDK/Lib/libcrypto.lib")
+#pragma comment(lib,"../SDK/Lib/libssl.lib")
 
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
