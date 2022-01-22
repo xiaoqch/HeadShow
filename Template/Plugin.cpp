@@ -48,7 +48,7 @@ Logger logger("HeadShow");
 using namespace std;
 playerMap<string> ORIG_NAME;
 int tick = 0;
-const std::string ver = "v0.0.4";
+const std::string ver = "v0.0.6";
 
 //修改返回的Name 
 THook(string&, "?getNameTag@Actor@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@XZ", void* x) {
@@ -60,7 +60,7 @@ THook(string&, "?getNameTag@Actor@@UEBAAEBV?$basic_string@DU?$char_traits@D@std@
 
 //Config
 string defaultString = "%Name%\n§c❤§b%maxHealth%§e/§a%health% §b%maxHunger%§e/§a%hunger%\n§f%device% §c%avgPing%ms";
-string defaultScoreBoard = "";
+json defaultScoreBoard;
 int defaultTick = 20;
 
 bool readJson() {
@@ -70,7 +70,7 @@ bool readJson() {
 		jfile >> j;		// 以文件流形式读取 json 文件
 		defaultTick = j.at("updateTick");
 		defaultString = j.at("showTitle");
-		defaultScoreBoard = j.at("scoreBoard");
+		defaultScoreBoard = j["scoreBoard"];
 		return true;
 	}
 	else {
@@ -148,6 +148,16 @@ public:
 			bool re = readJson();
 			if (re) {
 				output.addMessage("HeadShow file reload success.");
+				//检查计分板
+				if (defaultScoreBoard.size() != 0) {
+					for (auto it = defaultScoreBoard.begin(); it != defaultScoreBoard.end(); ++it) {
+						string board = (string)it.value();
+						if (!::Global<Scoreboard>->getObjective(board)) {
+							auto obj = Scoreboard::newObjective(board, board);
+							output.addMessage("Failed to find " + board + ", created automatically");
+						}
+					}
+				}
 			}
 		}
 	}
@@ -193,9 +203,14 @@ void PluginInit()
 		version();
 
 		//检查计分板
-		if (!::Global<Scoreboard>->getObjective(defaultScoreBoard)) {
-			auto obj = Scoreboard::newObjective(defaultScoreBoard, defaultScoreBoard);
-			logger.warn("Failed to find " + defaultScoreBoard + ", created automatically");
+		if (defaultScoreBoard.size() != 0) {
+			for (auto it = defaultScoreBoard.begin(); it != defaultScoreBoard.end(); ++it) {
+				string board = (string)it.value();
+				if (!::Global<Scoreboard>->getObjective(board)) {
+					auto obj = Scoreboard::newObjective(board, board);
+					logger.warn("Failed to find " + board + ", created automatically");
+				}
+			}
 		}
 		return true;
 	});
@@ -228,10 +243,14 @@ bool updateHead() {
 			}
 		}
 		string dfs = defaultString;
-		if (defaultScoreBoard != "") {
-			string score = std::to_string(pl->getScore(defaultScoreBoard));
-			dfs = m_replace(dfs, "%score%", score);
+		//获取scoreboard
+		if (defaultScoreBoard.size() != 0) {
+			for (auto it = defaultScoreBoard.begin(); it != defaultScoreBoard.end(); ++it) {
+				string score = std::to_string(pl->getScore((string)it.value()));
+				dfs = m_replace(dfs, "%"+it.key()+"%", score);
+			}
 		}
+		//获取Money
 		if (dynamicSymbolsMap.LLMoneyGet) {
 			string money = std::to_string(EconomySystem::getMoney(pl->getXuid()));
 			dfs = m_replace(dfs, "%money%", money);
