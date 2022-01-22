@@ -6,9 +6,13 @@
 ## Config File
 - At plugins/HeadShow/config.json
 ```json
-{
-  "updateTick": 60,
-  "showTitle": "%Name%\n§c❤§b%maxHealth%§e/§a%health% §b%maxHunger%§e/§a%hunger%\n§f%device% §c%avgPing%ms"
+{   
+    "updateTick":60,
+    "scoreBoard": {
+      "score": "money",
+      "score1": "money1"
+    },
+    "showTitle":"%Name%\n§c❤§b%maxHealth%§e/§a%health% §b%maxHunger%§e/§a%hunger%\n§f%device% §c%avgPing%ms\n%score%,%score1%"
 }
 ```
 - Placeholder:
