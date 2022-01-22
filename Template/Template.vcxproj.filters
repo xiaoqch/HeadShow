@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="杂项文件">
+      <UniqueIdentifier>{47bdc67f-9b51-4382-ac40-b5feb10f0016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="杂项文件\Builder">
+      <UniqueIdentifier>{496e969c-2a89-4437-b9d6-c28b2334bc76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -42,5 +48,11 @@
   <ItemGroup>
     <None Include="..\readme.md" />
     <None Include="..\readme_zh.md" />
+    <None Include="..\HeadShow\config.json">
+      <Filter>杂项文件</Filter>
+    </None>
+    <None Include="..\.github\workflows\build.yml">
+      <Filter>杂项文件\Builder</Filter>
+    </None>
   </ItemGroup>
 </Project>

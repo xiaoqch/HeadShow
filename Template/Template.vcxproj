@@ -92,6 +92,8 @@ copy /Y $(TargetPath) $(LocalDebuggerWorkingDirectory)\plugins\
     <ClCompile Include="Plugin.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.github\workflows\build.yml" />
+    <None Include="..\HeadShow\config.json" />
     <None Include="..\readme.md" />
     <None Include="..\readme_zh.md" />
   </ItemGroup>
